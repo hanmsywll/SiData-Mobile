@@ -22,7 +22,7 @@ class SurveiCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
                 imagePath,
@@ -30,7 +30,7 @@ class SurveiCard extends StatelessWidget {
                 width: 160,
                 height: 70,
               ),
-              const SizedBox(width: 8), 
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
