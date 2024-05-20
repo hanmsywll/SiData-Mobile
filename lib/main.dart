@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'beranda.dart';
 import 'profile.dart';
-import 'peringkat.dart';// Pastikan Anda memiliki file ini
+import 'peringkat.dart';
+import 'search_pertama.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       home: const MainPage(),
       routes: {
         '/profile': (context) => const ProfilePage(),
-        '/peringkat': (context) => const PeringkatPage(), // Jika Anda ingin rute untuk halaman Peringkat
+        '/peringkat': (context) => const PeringkatPage(),
+        '/search': (context) => const SearchPertama(),
       },
     );
   }

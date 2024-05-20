@@ -76,13 +76,19 @@ class Beranda extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Cari survei',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/search');
+                },
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Cari survei',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  enabled: false, // Make the TextField non-editable
                 ),
               ),
               const SizedBox(height: 16),
@@ -214,7 +220,8 @@ class SurveyCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(author),

@@ -31,17 +31,25 @@ class AkunSaya extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
-              buildProfileField(Icons.person, 'Nama Lengkap', 'Raihan Mahes Salma'),
-              buildProfileField(Icons.location_city, 'Tempat Lahir', 'Jakarta Selatan, DKI Jakarta, Indonesia'),
+              buildProfileField(
+                  Icons.person, 'Nama Lengkap', 'Raihan Mahes Salma'),
+              buildProfileField(Icons.location_city, 'Tempat Lahir',
+                  'Jakarta Selatan, DKI Jakarta, Indonesia'),
               buildProfileField(Icons.cake, 'Tanggal Lahir', '03/04/2003'),
-              buildProfileField(Icons.school, 'Asal Universitas', 'Universitas Telkom'),
+              buildProfileField(
+                  Icons.school, 'Asal Universitas', 'Universitas Telkom'),
               buildProfileField(Icons.book, 'Jurusan', 'D3 Sistem Informasi'),
               buildProfileField(Icons.date_range, 'Tahun Angkatan', '2022'),
-              buildProfileField(Icons.credit_card, 'Nomor Induk Mahasiswa', '3048202103'),
-              buildProfileField(Icons.email, 'Email', 'rahesaltelkom@gmail.com', isEditable: true),
-              buildProfileField(Icons.phone, 'No. Telepon', '098374879834', isEditable: true),
-              buildProfileField(Icons.person_outline, 'Username', 'Rahesal', isEditable: true),
-              buildProfileField(Icons.lock, 'Password', '********', isEditable: true),
+              buildProfileField(
+                  Icons.credit_card, 'Nomor Induk Mahasiswa', '3048202103'),
+              buildProfileField(Icons.email, 'Email', 'rahesaltelkom@gmail.com',
+                  isEditable: true),
+              buildProfileField(Icons.phone, 'No. Telepon', '098374879834',
+                  isEditable: true),
+              buildProfileField(Icons.person_outline, 'Username', 'Rahesal',
+                  isEditable: true),
+              buildProfileField(Icons.lock, 'Password', '********',
+                  isEditable: true),
             ],
           ),
         ),
@@ -49,7 +57,8 @@ class AkunSaya extends StatelessWidget {
     );
   }
 
-  Widget buildProfileField(IconData icon, String label, String value, {bool isEditable = false}) {
+  Widget buildProfileField(IconData icon, String label, String value,
+      {bool isEditable = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -61,7 +70,8 @@ class AkunSaya extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
