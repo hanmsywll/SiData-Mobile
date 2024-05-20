@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_buat_survei.dart';
 
 class Beranda extends StatelessWidget {
   const Beranda({super.key});
@@ -113,7 +114,10 @@ class Beranda extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Navigasi ke halaman buat survei jika diperlukan
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SurveyPage()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
