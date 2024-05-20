@@ -11,7 +11,9 @@ class SurveyPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: Text('Buat Survei'),
         backgroundColor: Colors.blue,
