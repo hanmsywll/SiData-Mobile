@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'lihatsurvei-jawaban.dart';
 import 'buatsurvei.dart';
+import 'buatsurvei-edit.dart'; // Import laman EditSurveyPage
 
 class SurveyPage extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _SurveyPageState extends State<SurveyPage> {
       throw Exception("User ID not found in session");
     }
 
-    final response = await http.get(Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId'));
+    final response = await http.get(Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -36,6 +37,46 @@ class _SurveyPageState extends State<SurveyPage> {
     } else {
       throw Exception('Failed to load surveys');
     }
+  }
+
+  Future<void> deleteSurvey(int surveyId) async {
+    final response = await http.delete(Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/delete_survey.php?id_survei=$surveyId'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _surveysFuture = fetchSurveys();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Survey deleted successfully')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete survey')));
+    }
+  }
+
+  void _confirmDelete(int surveyId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Konfirmasi"),
+          content: Text("Apakah Anda yakin ingin menghapus survei ini beserta semua jawabannya?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Batal"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Hapus"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                deleteSurvey(surveyId);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -110,39 +151,49 @@ class _SurveyPageState extends State<SurveyPage> {
               ),
               SizedBox(height: 16),
               FutureBuilder<List<dynamic>>(
-  future: _surveysFuture,
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator());
-    } else if (snapshot.hasError) {
-      return Text('Error: ${snapshot.error}');
-    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-      return Text(
-        'Kamu belum pernah membuat survei',
-        style: TextStyle(fontSize: 16, color: Colors.grey),
-      );
-    } else if (snapshot.hasData) {
-      return Column(
-        children: snapshot.data!.map<Widget>((survey) {
-          return TemplateCard(
-            imagePath: 'assets/home_buat_survei.jpg',
-            title: survey['judul_survei'],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SurveyAnswersPage(surveyId: survey['id_survei']),
-                ),
-              );
-            },
-          );
-        }).toList(),
-      );
-    }
-    return Container();
-  },
-),
-
+                future: _surveysFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                    return Text(
+                      'Kamu belum pernah membuat survei',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    );
+                  } else if (snapshot.hasData) {
+                    return Column(
+                      children: snapshot.data!.map<Widget>((survey) {
+                        return TemplateCard(
+                          imagePath: 'assets/home_buat_survei.jpg',
+                          title: survey['judul_survei'],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SurveyAnswersPage(surveyId: survey['id_survei']),
+                              ),
+                            );
+                          },
+                          onEdit: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditSurveyPage(surveyId: survey['id_survei']),
+                              ),
+                            );
+                          },
+                          onDelete: () {
+                            _confirmDelete(survey['id_survei']);
+                          },
+                        );
+                      }).toList(),
+                    );
+                  }
+                  return Container();
+                },
+              ),
               SizedBox(height: 25),
               Divider(),
               SizedBox(height: 25),
@@ -154,13 +205,13 @@ class _SurveyPageState extends State<SurveyPage> {
               TemplateCard(
                 imagePath: 'assets/template1.jpg',
                 title: 'Kuesioner Pengukuran Kualitas Jasa dengan Metode SERVQUAL',
-                onTap: (){},
+                onTap: () {},
               ),
               SizedBox(height: 16),
               TemplateCard(
                 imagePath: 'assets/template2.jpg',
                 title: 'Kuesioner Maslach Burnout Inventory (Maslach dan Jackson, 1981)',
-                onTap: (){}, 
+                onTap: () {},
               ),
             ],
           ),
@@ -174,8 +225,10 @@ class TemplateCard extends StatelessWidget {
   final String imagePath;
   final String title;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  TemplateCard({required this.imagePath, required this.title, required this.onTap});
+  TemplateCard({required this.imagePath, required this.title, required this.onTap, this.onEdit, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +266,22 @@ class TemplateCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                if (onEdit != null || onDelete != null)
+                  ButtonBar(
+                    alignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      if (onEdit != null)
+                        TextButton(
+                          onPressed: onEdit,
+                          child: Text('Edit'),
+                        ),
+                      if (onDelete != null)
+                        TextButton(
+                          onPressed: onDelete,
+                          child: Text('Hapus'),
+                        ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -221,4 +290,3 @@ class TemplateCard extends StatelessWidget {
     );
   }
 }
-

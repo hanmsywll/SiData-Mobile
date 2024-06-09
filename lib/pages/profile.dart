@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../utils/session_manager.dart';
 import 'profile-bantuan.dart';
 import 'profile-akunsaya.dart';
+import 'profile-informasiapk.dart'; // Add this line
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -30,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -38,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           username = data['nama'];
           joinDate = data['waktu_buatakun'];
-          points = data['points'] ?? 0;
+          points = data['poin'] ?? 0;
           profileImage = data['pp'] ?? 'assets/avatar.png';
         });
       } else {
@@ -57,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _logout(BuildContext context) async {
     try {
       final response = await http.get(
-        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/logout.php'),
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/logout.php'),
       );
 
       if (response.statusCode == 200) {
@@ -192,7 +193,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: const Text('Informasi Aplikasi'),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
-                  // Aksi untuk navigasi ke halaman Informasi Aplikasi
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const InformasiAplikasiPage()), // Update this line
+                  );
                 },
               ),
               const Divider(),

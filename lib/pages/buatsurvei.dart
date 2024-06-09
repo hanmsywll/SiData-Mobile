@@ -130,7 +130,7 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/survei.php'),
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/survei.php'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(surveyData),
       );

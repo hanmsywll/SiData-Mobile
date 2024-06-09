@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import '../utils/api_service.dart';
+import 'package:http/http.dart' as http;
+import '../utils/session_manager.dart';
 
 class Peringkat {
   final int idPengguna;
   final String nama;
   final int skor;
+  final String avatar;
 
-  Peringkat({required this.idPengguna, required this.nama, required this.skor});
+  Peringkat({required this.idPengguna, required this.nama, required this.skor, required this.avatar});
 
   factory Peringkat.fromJson(Map<String, dynamic> json) {
     return Peringkat(
       idPengguna: json['id_pengguna'],
       nama: json['nama'],
       skor: json['poin'],
+      avatar: json['pp'] ?? 'assets/avatar.png',
     );
   }
 }
@@ -26,11 +31,49 @@ class PeringkatPage extends StatefulWidget {
 
 class _PeringkatPageState extends State<PeringkatPage> {
   late Future<List<Peringkat>> futurePeringkat;
+  String? username;
+  int userPoints = 0;
+  int? userId;
+  String? profileImage;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserProfile();
     futurePeringkat = fetchPeringkat();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final String? userIdString = await SessionManager.getUserId();
+    if (userIdString == null) return;
+
+    int userId = int.tryParse(userIdString) ?? -1;
+    if (userId == -1) return;
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          username = data['nama'];
+          userPoints = data['poin'] ?? 0;
+          profileImage = data['pp'] ?? 'assets/avatar.png';
+          this.userId = userId; // Set userId in the state
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch user profile data')),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error occurred: $error')),
+      );
+    }
   }
 
   @override
@@ -39,14 +82,6 @@ class _PeringkatPageState extends State<PeringkatPage> {
       appBar: AppBar(
         title: const Text('Responden Paling Aktif'),
         backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info),
-            onPressed: () {
-              // Aksi untuk tombol info
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -64,7 +99,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
                 return Column(
                   children: [
                     const Text(
-                      'Edisi Bulan Mei',
+                      'Top 3 Global SiData',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
@@ -75,35 +110,52 @@ class _PeringkatPageState extends State<PeringkatPage> {
                           rank: 2,
                           name: snapshot.data![1].nama,
                           points: snapshot.data![1].skor,
-                          imagePath: 'assets/sophia.jpg',
+                          avatar: snapshot.data![1].avatar,
                         ),
                         _buildTopResponder(
                           rank: 1,
                           name: snapshot.data![0].nama,
                           points: snapshot.data![0].skor,
-                          imagePath: 'assets/kevin.jpg',
+                          avatar: snapshot.data![0].avatar,
                           isCrown: true,
                         ),
                         _buildTopResponder(
                           rank: 3,
                           name: snapshot.data![2].nama,
                           points: snapshot.data![2].skor,
-                          imagePath: 'assets/alex.jpg',
+                          avatar: snapshot.data![2].avatar,
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    ...snapshot.data!.map((peringkat) {
+                    ...snapshot.data!.sublist(3).asMap().entries.map((entry) {
+                      int index = entry.key + 4; // +4 karena sudah ada 3 teratas
+                      Peringkat peringkat = entry.value;
                       return _buildRankedResponder(
-                        rank: snapshot.data!.indexOf(peringkat) + 1,
+                        rank: index,
                         name: peringkat.nama,
-                        university: 'Telkom University',
-                        surveys: 200, // Dummy data for surveys
                         points: peringkat.skor,
-                        imagePath: 'assets/avatar.png',
-                        isCurrentUser: peringkat.nama == 'Rahesal (me)',
+                        avatar: peringkat.avatar,
+                        isCurrentUser: peringkat.idPengguna == userId,
                       );
                     }).toList(),
+                    const Divider(),
+                    Card(
+                      elevation: 4.0,
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ListTile(
+                        leading: profileImage != null
+                            ? (profileImage!.startsWith('http')
+                                ? Image.network(profileImage!, width: 70, height: 70, fit: BoxFit.cover)
+                                : Image.asset(profileImage!, width: 70, height: 70, fit: BoxFit.cover))
+                            : Image.asset('assets/avatar.png', width: 70, height: 70, fit: BoxFit.cover), // Use your uploaded image
+                        title: Text(
+                          username != null ? 'Poin Anda: $userPoints' : 'Memuat data pengguna...',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: username != null ? Text('Nama: $username') : null,
+                      ),
+                    ),
                   ],
                 );
               }
@@ -118,7 +170,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
     required int rank,
     required String name,
     required int points,
-    required String imagePath,
+    required String avatar,
     bool isCrown = false,
   }) {
     // Potong nama jika lebih dari 9 karakter
@@ -127,13 +179,17 @@ class _PeringkatPageState extends State<PeringkatPage> {
     return Column(
       children: [
         if (isCrown) const Icon(Icons.emoji_events, color: Colors.orange, size: 32),
+        Text(
+          '$rank',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
         CircleAvatar(
           radius: 40,
-          backgroundImage: AssetImage(imagePath),
+          backgroundImage: avatar.startsWith('http') ? NetworkImage(avatar) : AssetImage(avatar) as ImageProvider,
         ),
         const SizedBox(height: 8),
         Text(
-          '$rank. $displayName',
+          displayName,
           style: const TextStyle(fontWeight: FontWeight.bold),
           overflow: TextOverflow.ellipsis,
         ),
@@ -145,18 +201,31 @@ class _PeringkatPageState extends State<PeringkatPage> {
   Widget _buildRankedResponder({
     required int rank,
     required String name,
-    required String university,
-    required int surveys,
     required int points,
-    required String imagePath,
+    required String avatar,
     bool isCurrentUser = false,
   }) {
     return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: AssetImage(imagePath),
+      leading: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '$rank',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
+        ],
       ),
-      title: Text(name),
-      subtitle: Text('$university\n$surveys survei telah diisi'),
+      title: Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: avatar.startsWith('http') ? NetworkImage(avatar) : AssetImage(avatar) as ImageProvider,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(name),
+          ),
+        ],
+      ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

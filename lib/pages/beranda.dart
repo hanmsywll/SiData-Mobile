@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../utils/session_manager.dart';
 import 'buatsurvei-home.dart';
-import '../search_pertama.dart'; // Pastikan untuk mengimpor SearchPertama
+import 'isisurvei-pembuka.dart';
+import 'search-pertama.dart';
 
 class Beranda extends StatefulWidget {
   const Beranda({super.key});
@@ -12,18 +15,32 @@ class Beranda extends StatefulWidget {
 
 class _BerandaState extends State<Beranda> {
   String? _username;
+  late Future<List<Survey>> futureSurveys;
 
   @override
   void initState() {
     super.initState();
     _loadUsername();
+    futureSurveys = fetchSurveys();
   }
 
   Future<void> _loadUsername() async {
-    String? username = await SessionManager.getUserName(); // Mengambil nama pengguna
+    String? username = await SessionManager.getUserName();
     setState(() {
       _username = username;
     });
+  }
+
+  Future<List<Survey>> fetchSurveys() async {
+    final response = await http.get(Uri.parse(
+        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/survey.php'));
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((data) => Survey.fromJson(data)).toList();
+    } else {
+      throw Exception('Gagal menampilkan survei');
+    }
   }
 
   @override
@@ -52,7 +69,7 @@ class _BerandaState extends State<Beranda> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Halo, ${_username ?? 'Pengguna'}!', // Ganti nama pengguna dinamis
+                    'Halo, ${_username ?? 'Pengguna'}!',
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   Row(
@@ -68,8 +85,7 @@ class _BerandaState extends State<Beranda> {
                       const SizedBox(width: 8),
                       Stack(
                         children: [
-                          const Icon(Icons.notifications,
-                              color: Colors.amber, size: 28),
+                          const Icon(Icons.notifications, color: Colors.amber, size: 28),
                           Positioned(
                             right: 0,
                             child: Container(
@@ -114,7 +130,7 @@ class _BerandaState extends State<Beranda> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  enabled: false, // Membuat TextField tidak dapat diedit
+                  enabled: false,
                 ),
               ),
               const SizedBox(height: 16),
@@ -139,7 +155,7 @@ class _BerandaState extends State<Beranda> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                          Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => SurveyPage()),
                         );
@@ -161,23 +177,35 @@ class _BerandaState extends State<Beranda> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemBuilder: (context, index) {
-                    return const SurveyCard(
-                      title:
-                          'Survei Responden Terhadap Penggunaan Aplikasi E-Money',
-                      author: 'Dyasingrum, ITB 2021',
-                      points: 12,
-                      isRecommendation: true,
-                      imagePath: 'assets/survey_image.jpg',
+              FutureBuilder<List<Survey>>(
+                future: futureSurveys,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('Survei tidak tersedia');
+                  } else {
+                    return SizedBox(
+                      height: 300,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data!.length,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        itemBuilder: (context, index) {
+                          return SurveyCard(
+                            title: snapshot.data![index].title,
+                            author: snapshot.data![index].author,
+                            isRecommendation: true,
+                            imagePath: snapshot.data![index].imagePath,
+                            idSurvei: snapshot.data![index].idSurvei,
+                          );
+                        },
+                      ),
                     );
-                  },
-                ),
+                  }
+                },
               ),
               const SizedBox(height: 16),
               const Text(
@@ -193,13 +221,12 @@ class _BerandaState extends State<Beranda> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   itemBuilder: (context, index) {
                     return const SurveyCard(
-                      title:
-                          'Survei Preferensi Mahasiswa Terhadap Video Live Streaming',
+                      title: 'Survei Preferensi Mahasiswa Terhadap Video Live Streaming',
                       author: 'Nazmy Maulina, Telkom 2022',
-                      points: 12,
                       claimed: true,
                       imagePath: 'assets/survey_image1.jpg',
                       showViewSurveyButton: false,
+                      idSurvei: 0,
                     );
                   },
                 ),
@@ -215,21 +242,21 @@ class _BerandaState extends State<Beranda> {
 class SurveyCard extends StatelessWidget {
   final String title;
   final String author;
-  final int points;
   final bool claimed;
   final bool isRecommendation;
   final String imagePath;
   final bool showViewSurveyButton;
+  final int idSurvei;
 
   const SurveyCard({
     super.key,
     required this.title,
     required this.author,
-    required this.points,
     this.claimed = false,
     this.isRecommendation = false,
     required this.imagePath,
     this.showViewSurveyButton = false,
+    required this.idSurvei,
   });
 
   @override
@@ -247,14 +274,6 @@ class SurveyCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(author),
-              const SizedBox(height: 8),
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -266,26 +285,45 @@ class SurveyCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text('Oleh: $author'),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       Text(
-                        '+ $points pts',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        '+ 20 pts',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      const Icon(Icons.monetization_on,
+                          color: Colors.amber, size: 20),
                     ],
                   ),
                   if (isRecommendation)
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PembukaSurvei(idSurvei: idSurvei),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                       child: const Text(
@@ -296,7 +334,7 @@ class SurveyCard extends StatelessWidget {
                   if (claimed)
                     ElevatedButton(
                       onPressed: () {
-                        // Tambahkan aksi klaim poin di sini
+                        // Aksi klaim poin di sini
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
@@ -315,6 +353,29 @@ class SurveyCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class Survey {
+  final String title;
+  final String author;
+  final String imagePath;
+  final int idSurvei;
+
+  Survey({
+    required this.title,
+    required this.author,
+    required this.imagePath,
+    required this.idSurvei,
+  });
+
+  factory Survey.fromJson(Map<String, dynamic> json) {
+    return Survey(
+      title: json['judul_survei'] ?? 'No Title',
+      author: json['nama_pengguna'] ?? 'Unknown Author',
+      imagePath: 'assets/survey_image.jpg',
+      idSurvei: json['id_survei'] ?? 0,
     );
   }
 }

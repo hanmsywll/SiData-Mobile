@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'lihatsurvei-jawabanindividu.dart';
 
 class SurveyAnswersPage extends StatelessWidget {
   final int surveyId;
@@ -17,7 +18,7 @@ class SurveyAnswersPage extends StatelessWidget {
     }
 
     final response = await http.get(Uri.parse(
-        'https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=responden&survey_id=$surveyId'));
+        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=responden&survey_id=$surveyId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -35,7 +36,7 @@ class SurveyAnswersPage extends StatelessWidget {
     }
 
     final response = await http.get(Uri.parse(
-        'https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=answers&survey_id=$surveyId'));
+        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=answers&survey_id=$surveyId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -78,6 +79,17 @@ class SurveyAnswersPage extends StatelessWidget {
                           return ListTile(
                             title: Text(respondent['nama']),
                             leading: Icon(Icons.person),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => IndividualAnswersPage(
+                                    surveyId: surveyId,
+                                    respondentId: respondent['id_pengguna'],
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         }).toList(),
                       ],

@@ -34,7 +34,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -66,7 +66,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/update_profile.php'),
+        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/update_profile.php'),
         body: jsonEncode({
           'user_id': userId,
           'email': emailController.text,
@@ -109,7 +109,7 @@ class _AkunSayaState extends State<AkunSaya> {
       try {
         final request = http.MultipartRequest(
           'POST',
-          Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/upload_profile_image.php'),
+          Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/upload_profile_image.php'),
         );
         request.fields['user_id'] = userId;
         request.files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
