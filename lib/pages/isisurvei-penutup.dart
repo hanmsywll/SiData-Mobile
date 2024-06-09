@@ -16,19 +16,30 @@ class PenutupSurvei extends StatelessWidget {
           children: [
             Image.asset('assets/header_isisurvei.png'),
             const SizedBox(height: 16.0),
-            Text(
-              surveyTitle,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.left,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Selamat, kamu mendapatkan 20 points!',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 4),
+                Icon(Icons.monetization_on, color: Colors.amber, size: 22),
+              ],
             ),
             const SizedBox(height: 16.0),
+            Text(
+              surveyTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.left,
+            ),
+            const SizedBox(height: 8.0),
             const Text(
-              'Terima kasih telah berpartisipasi dalam pengisian survei.\n'
-              'Have a nice day!',
+              'Terima kasih telah berpartisipasi dalam pengisian survei.',
               style: TextStyle(fontSize: 12),
               textAlign: TextAlign.left,
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
