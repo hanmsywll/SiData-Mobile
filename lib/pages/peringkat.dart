@@ -148,7 +148,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
                             ? (profileImage!.startsWith('http')
                                 ? Image.network(profileImage!, width: 70, height: 70, fit: BoxFit.cover)
                                 : Image.asset(profileImage!, width: 70, height: 70, fit: BoxFit.cover))
-                            : Image.asset('assets/avatar.png', width: 70, height: 70, fit: BoxFit.cover), // Use your uploaded image
+                            : Image.asset('assets/peringkat.jpg', width: 70, height: 70, fit: BoxFit.cover), // Use your uploaded image
                         title: Text(
                           username != null ? 'Poin Anda: $userPoints' : 'Memuat data pengguna...',
                           style: const TextStyle(fontWeight: FontWeight.bold),

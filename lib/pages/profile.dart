@@ -200,15 +200,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
               const Divider(),
-              ListTile(
-                leading: const Icon(Icons.notifications),
-                title: const Text('Notifikasi'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  // Aksi untuk navigasi ke halaman Notifikasi
-                },
-              ),
-              const Divider(),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () {

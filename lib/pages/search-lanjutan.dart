@@ -159,14 +159,19 @@ class SurveyCard2 extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '+ 20 pts',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Text(
+                          '+ 20 pts',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const Icon(Icons.monetization_on,
+                            color: Colors.amber, size: 24),
+                      ],
+                    ),
                   ),
-                  const Icon(Icons.monetization_on,
-                      color: Colors.amber, size: 24),
-                  const SizedBox(width: 150),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
