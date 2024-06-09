@@ -20,7 +20,7 @@ class PenutupSurvei extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Selamat, kamu mendapatkan 20 points!',
+                  'Selamat, kamu mendapatkan 20 pts!',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 4),
