@@ -30,6 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.0.6
+  http: ^0.13.3
+  image_picker: ^0.8.4+2
+  url_launcher: ^6.0.20
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -80,3 +85,4 @@ flutter:
     - assets/twitter_icon.png
     - assets/whatsapp_icon.png
     - assets/link_icon.png
+    - assets/bantuan.png

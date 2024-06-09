@@ -1,9 +1,87 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'bantuan.dart';
-import 'akunsaya.dart';
+import 'package:http/http.dart' as http;
+import '../utils/session_manager.dart';
+import 'profile-bantuan.dart';
+import 'profile-akunsaya.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String? username;
+  String? joinDate;
+  int points = 0;
+  String? profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    final userId = await SessionManager.getUserId();
+    if (userId == null) return;
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          username = data['nama'];
+          joinDate = data['waktu_buatakun'];
+          points = data['points'] ?? 0;
+          profileImage = data['pp'] ?? 'assets/avatar.png';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch profile data')),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $error')),
+      );
+    }
+  }
+
+  void _logout(BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://a2ae-125-164-21-172.ngrok-free.app/SiDataAPI/api/logout.php'),
+      );
+
+      if (response.statusCode == 200) {
+        await SessionManager.clearSession();
+        Navigator.pushReplacementNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal keluar. Status code: ${response.statusCode}')),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $error')),
+      );
+    }
+  }
+
+  void _navigateToAkunSaya(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AkunSaya()),
+    ).then((_) => _fetchProfile()); // Refresh profil setelah kembali dari halaman Akun Saya
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +103,21 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 16),
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/avatar.png'),
+                backgroundImage: profileImage != null
+                    ? NetworkImage(profileImage!)
+                    : AssetImage('assets/avatar.png') as ImageProvider,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Rahesal',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                username ?? '',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               TextButton.icon(
                 onPressed: () {
-                  // Aksi untuk tombol edit
+                  _navigateToAkunSaya(context);
                 },
                 icon: const Icon(Icons.edit, color: Colors.orange),
                 label: const Text(
@@ -52,9 +132,11 @@ class ProfilePage extends StatelessWidget {
                   color: Colors.orange,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  'Gabung Sejak 11 Januari 2023',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  joinDate != null
+                      ? 'Gabung Sejak $joinDate'
+                      : '',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(height: 8),
@@ -71,14 +153,14 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.monetization_on, color: Colors.amber),
-                    SizedBox(width: 8),
+                    const Icon(Icons.monetization_on, color: Colors.amber),
+                    const SizedBox(width: 8),
                     Text(
-                      'Point kamu\n1000 Pts',
-                      style: TextStyle(fontSize: 16),
+                      'Point kamu\n$points Pts',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -89,10 +171,7 @@ class ProfilePage extends StatelessWidget {
                 title: const Text('Akun Saya'),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AkunSaya()),
-                  );
+                  _navigateToAkunSaya(context);
                 },
               ),
               const Divider(),
@@ -129,7 +208,7 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () {
-                  // Aksi untuk tombol keluar
+                  _logout(context);
                 },
                 icon: const Icon(Icons.logout, color: Colors.blue),
                 label: const Text(

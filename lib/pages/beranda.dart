@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
-import 'home_buat_survei.dart';
+import '../utils/session_manager.dart';
+import 'buatsurvei-home.dart';
+import '../search_pertama.dart'; // Pastikan untuk mengimpor SearchPertama
 
-class Beranda extends StatelessWidget {
+class Beranda extends StatefulWidget {
   const Beranda({super.key});
+
+  @override
+  _BerandaState createState() => _BerandaState();
+}
+
+class _BerandaState extends State<Beranda> {
+  String? _username;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    String? username = await SessionManager.getUserName(); // Mengambil nama pengguna
+    setState(() {
+      _username = username;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +51,9 @@ class Beranda extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Halo, Rahesal!',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Text(
+                    'Halo, ${_username ?? 'Pengguna'}!', // Ganti nama pengguna dinamis
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   Row(
                     children: [
@@ -79,7 +101,10 @@ class Beranda extends StatelessWidget {
               const SizedBox(height: 16),
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, '/search');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchPertama()),
+                  );
                 },
                 child: TextField(
                   decoration: InputDecoration(
@@ -89,7 +114,7 @@ class Beranda extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  enabled: false, // Make the TextField non-editable
+                  enabled: false, // Membuat TextField tidak dapat diedit
                 ),
               ),
               const SizedBox(height: 16),
