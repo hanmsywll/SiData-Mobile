@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
-import '../utils/api_service.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../utils/session_manager.dart';
 
@@ -19,6 +18,17 @@ class Peringkat {
       skor: json['poin'],
       avatar: json['pp'] ?? 'assets/avatar.png',
     );
+  }
+}
+
+Future<List<Peringkat>> fetchPeringkat() async {
+  final response = await http.get(Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/peringkat.php'));
+
+  if (response.statusCode == 200) {
+    List jsonResponse = json.decode(response.body);
+    return jsonResponse.map((data) => Peringkat.fromJson(data)).toList();
+  } else {
+    throw Exception('Failed to load peringkat');
   }
 }
 
@@ -52,7 +62,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -61,7 +71,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
           username = data['nama'];
           userPoints = data['poin'] ?? 0;
           profileImage = data['pp'] ?? 'assets/avatar.png';
-          this.userId = userId; // Set userId in the state
+          this.userId = userId;
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +139,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
                     ),
                     const SizedBox(height: 16),
                     ...snapshot.data!.sublist(3).asMap().entries.map((entry) {
-                      int index = entry.key + 4; // +4 karena sudah ada 3 teratas
+                      int index = entry.key + 4;
                       Peringkat peringkat = entry.value;
                       return _buildRankedResponder(
                         rank: index,
@@ -148,7 +158,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
                             ? (profileImage!.startsWith('http')
                                 ? Image.network(profileImage!, width: 70, height: 70, fit: BoxFit.cover)
                                 : Image.asset(profileImage!, width: 70, height: 70, fit: BoxFit.cover))
-                            : Image.asset('assets/peringkat.jpg', width: 70, height: 70, fit: BoxFit.cover), // Use your uploaded image
+                            : Image.asset('assets/peringkat.jpg', width: 70, height: 70, fit: BoxFit.cover),
                         title: Text(
                           username != null ? 'Poin Anda: $userPoints' : 'Memuat data pengguna...',
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -173,7 +183,6 @@ class _PeringkatPageState extends State<PeringkatPage> {
     required String avatar,
     bool isCrown = false,
   }) {
-    // Potong nama jika lebih dari 9 karakter
     String displayName = name.length > 9 ? '${name.substring(0, 9)}...' : name;
 
     return Column(

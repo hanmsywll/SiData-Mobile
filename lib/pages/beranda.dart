@@ -34,7 +34,7 @@ class _BerandaState extends State<Beranda> {
     try {
       final response = await http.get(
         Uri.parse(
-            'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$idPengguna'),
+            'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$idPengguna'),
       );
 
       if (response.statusCode == 200) {
@@ -59,7 +59,7 @@ class _BerandaState extends State<Beranda> {
 
   Future<List<Survei>> ambilSurvei() async {
     final response = await http.get(Uri.parse(
-        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/survey.php'));
+        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survey.php'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);

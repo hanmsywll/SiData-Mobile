@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -58,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _logout(BuildContext context) async {
     try {
       final response = await http.get(
-        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/logout.php'),
+        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/logout.php'),
       );
 
       if (response.statusCode == 200) {

@@ -17,7 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_passwordController.text == _confirmPasswordController.text) {
       try {
         final response = await http.post(
-          Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/auth.php'),
+          Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/auth.php'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             'action': 'register',

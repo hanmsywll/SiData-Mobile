@@ -34,7 +34,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
 
   Future<void> fetchSurveyTitle(int id) async {
     final response = await http.get(Uri.parse(
-        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
+        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
@@ -50,7 +50,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
 
   Future<List<Question>> fetchQuestions(int id) async {
     final response = await http.get(Uri.parse(
-        'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
+        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
@@ -84,7 +84,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
 
     final response = await http.post(
       Uri.parse(
-          'https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/insert_jawaban.php'),
+          'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/insert_jawaban.php'),
       headers: {
         'Content-Type': 'application/json',
       },

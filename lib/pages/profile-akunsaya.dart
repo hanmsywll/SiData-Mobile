@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import '../utils/session_manager.dart';
 
 class AkunSaya extends StatefulWidget {
@@ -34,7 +33,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -66,7 +65,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/update_profile.php'),
+        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/update_profile.php'),
         body: jsonEncode({
           'user_id': userId,
           'email': emailController.text,
@@ -95,47 +94,6 @@ class _AkunSayaState extends State<AkunSaya> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $error')),
       );
-    }
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      final userId = await SessionManager.getUserId();
-      if (userId == null) return;
-
-      try {
-        final request = http.MultipartRequest(
-          'POST',
-          Uri.parse('https://7cab-114-122-79-93.ngrok-free.app/SiDataAPI/api/upload_profile_image.php'),
-        );
-        request.fields['user_id'] = userId;
-        request.files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
-
-        final response = await request.send();
-        if (response.statusCode == 200) {
-          final responseData = await http.Response.fromStream(response);
-          final data = jsonDecode(responseData.body);
-
-          setState(() {
-            profileImage = data['image_url'];
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile image updated successfully')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload profile image')),
-          );
-        }
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $error')),
-        );
-      }
     }
   }
 
@@ -170,14 +128,11 @@ class _AkunSayaState extends State<AkunSaya> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                GestureDetector(
-                  onTap: isEditing ? _pickImage : null,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: profileImage != null && profileImage!.isNotEmpty
-                        ? NetworkImage(profileImage!)
-                        : AssetImage('assets/avatar.png') as ImageProvider,
-                  ),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: profileImage != null && profileImage!.isNotEmpty
+                      ? NetworkImage(profileImage!)
+                      : AssetImage('assets/avatar.png') as ImageProvider,
                 ),
                 const SizedBox(height: 16),
                 Text(
