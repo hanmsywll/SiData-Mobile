@@ -18,7 +18,7 @@ class SurveyAnswersPage extends StatelessWidget {
     }
 
     final response = await http.get(Uri.parse(
-        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=responden&survey_id=$surveyId'));
+        'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=responden&survey_id=$surveyId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -36,7 +36,7 @@ class SurveyAnswersPage extends StatelessWidget {
     }
 
     final response = await http.get(Uri.parse(
-        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=answers&survey_id=$surveyId'));
+        'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId&action=answers&survey_id=$surveyId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);

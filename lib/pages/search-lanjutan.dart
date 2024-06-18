@@ -22,7 +22,7 @@ class _SearchKeduaState extends State<SearchKedua> {
 
   Future<List<Survey>> fetchSurveys() async {
     final response = await http.get(Uri.parse(
-        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survey.php'));
+        'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/survey.php'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);

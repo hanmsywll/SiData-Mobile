@@ -91,7 +91,7 @@ class _SurveySettingsPageState extends State<SurveySettingsPage> {
     };
 
     final response = await http.post(
-      Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survei.php'),
+      Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/survei.php'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(settingsData),
     );

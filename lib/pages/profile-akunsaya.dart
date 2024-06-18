@@ -33,7 +33,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -65,7 +65,7 @@ class _AkunSayaState extends State<AkunSaya> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/update_profile.php'),
+        Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/update_profile.php'),
         body: jsonEncode({
           'user_id': userId,
           'email': emailController.text,

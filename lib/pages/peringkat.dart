@@ -22,7 +22,7 @@ class Peringkat {
 }
 
 Future<List<Peringkat>> fetchPeringkat() async {
-  final response = await http.get(Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/peringkat.php'));
+  final response = await http.get(Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/peringkat.php'));
 
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
@@ -62,7 +62,7 @@ class _PeringkatPageState extends State<PeringkatPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
+        Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/profile.php?user_id=$userId'),
       );
 
       if (response.statusCode == 200) {

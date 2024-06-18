@@ -23,7 +23,7 @@ class _PembukaSurveiState extends State<PembukaSurvei> {
 
   Future<SurveyDetails> fetchSurveyDetails(int id) async {
     final response = await http.get(Uri.parse(
-        'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
+        'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/survey.php?id=$id'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);

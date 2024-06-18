@@ -28,7 +28,7 @@ class _SurveyPageState extends State<SurveyPage> {
       throw Exception("User ID not found in session");
     }
 
-    final response = await http.get(Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId'));
+    final response = await http.get(Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/get_surveys.php?user_id=$userId'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -40,7 +40,7 @@ class _SurveyPageState extends State<SurveyPage> {
   }
 
   Future<void> deleteSurvey(int surveyId) async {
-    final response = await http.delete(Uri.parse('https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/delete_survey.php?id_survei=$surveyId'));
+    final response = await http.delete(Uri.parse('https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/delete_survey.php?id_survei=$surveyId'));
 
     if (response.statusCode == 200) {
       setState(() {

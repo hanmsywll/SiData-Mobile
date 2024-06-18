@@ -31,7 +31,7 @@ class _EditSurveyPageState extends State<EditSurveyPage> {
   Future<Map<String, dynamic>> _loadSurveyData() async {
     try {
       final response = await http.get(Uri.parse(
-          'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/get_surveys.php?id_survei=${widget.surveyId}'));
+          'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/get_surveys.php?id_survei=${widget.surveyId}'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -56,7 +56,7 @@ class _EditSurveyPageState extends State<EditSurveyPage> {
       try {
         final response = await http.post(
           Uri.parse(
-              'https://20a2-114-122-107-182.ngrok-free.app/SiDataAPI/api/update_survey.php'),
+              'https://9525-103-161-206-36.ngrok-free.app/SiDataAPI/api/update_survey.php'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'id_survei': widget.surveyId.toString(),
